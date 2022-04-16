@@ -1,0 +1,25 @@
+{
+    "connections": [
+        {
+            "connectionID": 0,
+            "computerName": "LAPTOP-PLG7Q83Y",
+            "OS": "Windows 10",
+            "linkedDate": "2022-04-04",
+            "lastActiveDate": "2022-04-05"
+        },
+        {
+            "connectionID": 1,
+            "computerName": "LAPTOP-BSK8Y64Q",
+            "OS": "Windows 10",
+            "linkedDate": "2022-03-28",
+            "lastActiveDate": "2022-03-31"
+        },
+        {
+            "connectionID": 2,
+            "computerName": "LAPTOP-DLLM0NL9",
+            "OS": "Windows 10",
+            "linkedDate": "2022-03-28",
+            "lastActiveDate": "2022-03-31"
+        }
+    ]
+}

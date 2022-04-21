@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
     SafeAreaView,
     View,
-    FlatList
+    FlatList,
+    TouchableOpacity,
+    Text,
 } from 'react-native';
 
 // import { connections } from '../Connection.json';
@@ -10,13 +13,14 @@ import ConnectionCard from './ConnectionCard';
 import { fs } from '../connectionHandler';
 
 export default function ConnectionPage() {
+    const navigation = useNavigation();
     const path = fs.DocumentDirectoryPath + '/Connection.json';
     const [connections, setConnections] = useState([]);
 
     useEffect(() => {
         fs.readFile(path)
             .then((res) => {
-                // console.log(res);
+                // console.log("[connectionPage] "+res);
                 setConnections(JSON.parse(res));
             })
             .catch((err) => {
@@ -38,7 +42,7 @@ export default function ConnectionPage() {
                 scrollEnabled={true}
                 data={connections}
                 numColumns={2}
-                keyExtractor={(item) => item.connectionID}
+                keyExtractor={(item) => item.conputerName}
                 renderItem={({ item }) => (
                     <ConnectionCard
                         computerName={item.computerName}
@@ -48,31 +52,14 @@ export default function ConnectionPage() {
                     />
                 )}
             />
+            <View style={{ position: "absolute", bottom: 25, right: 15}}>
+                <TouchableOpacity
+                    style={{backgroundColor: "#989DA5", borderRadius: 50, width: 50, height: 50, justifyContent: "center"}}
+                    onPress={() => {navigation.navigate('Welcome');}}
+                    >
+                    <Text style={{color: "#E8E8E8", alignSelf: "center", fontSize: 20, fontWeight: "900"}}>十</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
     )
 }
-
-{/* <FlatList
-    data={connections}
-    numColumns={2}
-    keyExtractor={(item) => item.connectionID}
-    renderItem={({ item }) => (
-        <ConnectionCard
-            computerName={item.computerName}
-            OS={item.OS}
-            linkedDate={item.linkedDate}
-            lastActiveDate={item.lastActiveDate}
-        />
-    )} /> */}
-
-{/* <SafeAreaView style={backgroundStyle}>
-            {connections.map((connection, i) => (
-                <ConnectionCard
-                    key={i}
-                    computerName={connection.computerName}
-                    OS={connection.OS}
-                    linkedDate={connection.linkedDate}
-                    lastActiveDate={connection.lastActiveDate}
-                />
-            ))}
-        </SafeAreaView> */}

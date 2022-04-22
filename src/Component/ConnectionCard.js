@@ -18,12 +18,11 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 
 // import { connections } from "../Connection.json";
-import { setConnectioned, fs } from "../connectionHandler";
+import { setConnected, getConnected } from "../connectionHandler";
 
 export default function WelcomePage(props) {
     const navigation = useNavigation();
     const { computerName, OS, linkedDate, lastActiveDate } = props;
-    const path = fs.DocumentDirectoryPath + '/Connection.json';
 
     const backgroundStyle = {
         flex: 1,
@@ -31,21 +30,16 @@ export default function WelcomePage(props) {
     };
 
     const delConnection = async (computerName) => {
-        fs.readFile(path)
-            .then((res) => {
-                var connections = JSON.parse(res);
-                for (let i = 0; i < connections.length; i++) {
-                    if (connections[i].computerName === computerName) {
-                        connections.splice(i, 1);                // comment this line for debug use
-                        break;
-                    }
-                }
-                if(connections.length === 0) navigation.navigate("Welcome");
-                setConnectioned(connections);
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
+        var connected = await getConnected();
+        connected = JSON.parse(connected);
+        for (let i = 0; i < connected.length; i++){
+            if (connected[i].computerName === computerName) {
+                connected.splice(i, 1);
+                break;
+            }
+        }
+        if(connected.length === 0) navigation.navigate("Welcome");
+        setConnected(connected);
     }
 
     return (

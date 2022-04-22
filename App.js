@@ -16,9 +16,11 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LogBox } from "react-native";
+import FlashMessage from "react-native-flash-message";
 
 import WelcomePage from './src/Component/WelcomePage';
 import ConnectionPage from './src/Component/ConnectionPage';
+import ConfirmationPage from './src/Component/ConfirmationPage';
 
 LogBox.ignoreLogs([
 	"exported from 'deprecated-react-native-prop-types'.",
@@ -41,8 +43,11 @@ const App = () => {
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
 					<Stack.Screen name="Connections" component={ConnectionPage} />
 					<Stack.Screen name="Welcome" component={WelcomePage} />
+					<Stack.Screen name="Confirmation" component={ConfirmationPage} />
 				</Stack.Navigator>
 			</NavigationContainer>
+			<FlashMessage position="bottom" />
+			{/* <ConfirmationPage computerName="LAPTOP-DLLM0NL9" OS="Windows 10" linkedDate="21/04/22" lastActiveDate="22/04/22"></ConfirmationPage> */}
 		</SafeAreaView>
 	);
 };

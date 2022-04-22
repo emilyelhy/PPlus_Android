@@ -17,11 +17,10 @@ import {
 } from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
 import Entypo from 'react-native-vector-icons/Entypo';
-import FlashMessage from "react-native-flash-message";
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from '@react-navigation/native';
 
-import { buildConnection } from '../connectionHandler';
+import { findInfo } from '../connectionHandler';
 
 export default function WelcomePage() {
 	const isDarkMode = useColorScheme() === 'dark';
@@ -40,13 +39,14 @@ export default function WelcomePage() {
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
 		if (connectData.current.port === 0) showMessage({ message: "Please enter port first" });
-		console.log("IPAddress: " + connectData.current.ipAddress);
-		console.log("Port: " + connectData.current.port);
-		if (await buildConnection(connectData.current) === -1) {
+		// console.log("IPAddress: " + connectData.current.ipAddress);
+		// console.log("Port: " + connectData.current.port);
+		const computer = findInfo(connectData.current);
+		if (!computer) {
 			showMessage({ message: "Error when connecting" });
 			return;
 		}
-		navigation.navigate('Connections');
+		navigation.navigate('Confirmation', { computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
 	}
 
 	const CopyLink = () => {
@@ -57,7 +57,6 @@ export default function WelcomePage() {
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<View style={{ justifyContent: "space-evenly", flex: 1 }}>
-				<FlashMessage position="bottom" />
 				<Text style={{ fontSize: 40, fontWeight: "600", color: "#7B8D93", textAlign: "center" }}>
 					Welcome{"\n"}to PPlus
 				</Text>

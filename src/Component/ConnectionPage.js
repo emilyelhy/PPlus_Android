@@ -10,22 +10,19 @@ import {
 
 // import { connections } from '../Connection.json';
 import ConnectionCard from './ConnectionCard';
-import { fs } from '../connectionHandler';
+import { getConnected } from '../connectionHandler';
 
 export default function ConnectionPage() {
     const navigation = useNavigation();
-    const path = fs.DocumentDirectoryPath + '/Connection.json';
     const [connections, setConnections] = useState([]);
 
     useEffect(() => {
-        fs.readFile(path)
-            .then((res) => {
-                // console.log("[connectionPage] "+res);
-                setConnections(JSON.parse(res));
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
+        const updateConnections = async () => {
+            var result = await getConnected();
+            result = JSON.parse(result);
+            setConnections(result);
+        }
+        updateConnections();
     }, [connections]);
 
     const backgroundStyle = {

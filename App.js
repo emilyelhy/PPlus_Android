@@ -21,6 +21,7 @@ import FlashMessage from "react-native-flash-message";
 import WelcomePage from './src/Component/WelcomePage';
 import ConnectionPage from './src/Component/ConnectionPage';
 import ConfirmationPage from './src/Component/ConfirmationPage';
+import TogglePage from './src/Component/TogglePage';
 
 LogBox.ignoreLogs([
 	"exported from 'deprecated-react-native-prop-types'.",
@@ -44,10 +45,10 @@ const App = () => {
 					<Stack.Screen name="Connections" component={ConnectionPage} />
 					<Stack.Screen name="Welcome" component={WelcomePage} />
 					<Stack.Screen name="Confirmation" component={ConfirmationPage} />
+					<Stack.Screen name="Toggle" component={TogglePage} />
 				</Stack.Navigator>
 			</NavigationContainer>
 			<FlashMessage position="bottom" />
-			{/* <ConfirmationPage computerName="LAPTOP-DLLM0NL9" OS="Windows 10" linkedDate="21/04/22" lastActiveDate="22/04/22"></ConfirmationPage> */}
 		</SafeAreaView>
 	);
 };

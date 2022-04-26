@@ -32,14 +32,21 @@ export default function WelcomePage(props) {
     const delConnection = async (computerName) => {
         var connected = await getConnected();
         connected = JSON.parse(connected);
-        for (let i = 0; i < connected.length; i++){
+        for (let i = 0; i < connected.length; i++) {
             if (connected[i].computerName === computerName) {
                 connected.splice(i, 1);
                 break;
             }
         }
-        if(connected.length === 0) navigation.navigate("Welcome");
+        if (connected.length === 0) navigation.navigate("Welcome");
         setConnected(connected);
+    }
+
+    const connect = (computerName) => {
+        // start streaming with computer (skip for now)
+
+        // navigate to toggle page
+        navigation.navigate("Toggle", {computerName});
     }
 
     return (
@@ -58,7 +65,7 @@ export default function WelcomePage(props) {
                     <Text style={{ color: "#7B8D93", fontWeight: "400" }}>Last active: {lastActiveDate}</Text>
                 </View>
                 <View style={{ alignSelf: "center", width: "70%", marginBottom: "8%" }}>
-                    <Button title="CONNECT" color="#989da5" />
+                    <Button onPress={() => connect(computerName)} title="CONNECT" color="#989da5" />
                 </View>
             </View>
         </SafeAreaView>

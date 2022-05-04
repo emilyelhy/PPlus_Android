@@ -46,7 +46,7 @@ export default function WelcomePage() {
 			showMessage({ message: "Error when connecting" });
 			return;
 		}
-		navigation.navigate('Confirmation', { computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
+		navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
 	}
 
 	const CopyLink = () => {

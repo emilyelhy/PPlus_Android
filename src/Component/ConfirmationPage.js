@@ -25,20 +25,25 @@ export default function ConfirmationPage({ route }) {
         // Actual connection code, maybe call handler again
         // skip from now
 
-        // update json file
+        // check hv ng hv file
+        // if no file -> write file
+        // if hv file -> get content -> write new file
+
         var result = await getConnected();
-        result = JSON.parse(result);
-        // verify if hv same device connecting [todo]
-        for (let i = 0; i < result.length; i++) {
-            if (result[i].computerName === computerName) {
-                console.log("Same")
-                showMessage({ message: "Already connected to this computer" });
-                return;
+        if (result.length > 0){
+            result = JSON.parse(result);
+            for (let i = 0; i < result.length; i++){
+                if (result[i].computerName === computerName) {
+                    console.log("Same")
+                    showMessage({ message: "Already connected to this computer" });
+                    return;
+                }
             }
+        } else {
+            result = [];
         }
         result.push(route.params);
-        setConnected(result);
-        // nav to connections page
+        await setConnected(result);
         navigation.navigate('Connections');
     }
 

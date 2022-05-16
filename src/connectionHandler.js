@@ -1,23 +1,27 @@
 const fs = require("react-native-fs");
 const PATH = fs.DocumentDirectoryPath + '/Connection.json';
 
-const setConnected = (newConnectionList) => {
-    fs.writeFile(PATH, JSON.stringify(newConnectionList))
-        .then((success) => {
-            console.log('FILE WRITTEN!');
-        })
-        .catch((err) => {
-            console.log(err.message);
-        });
+const setConnected = async (newConnectionList) => {
+    try {
+        await fs.writeFile(PATH, JSON.stringify(newConnectionList));
+        console.log("[connectionHandler.js] Connection JSON file written");
+    } catch (err) {
+        console.log(err);
+    }
 
 };
 
 const getConnected = async () => {
     try {
-        const res = await fs.readFile(PATH);
-        return res;
-    } catch(err) {
-        console.log(err);
+        if (await fs.exists(PATH)) {
+            const res = await fs.readFile(PATH);
+            return res;
+        } else {
+            console.log("[connectionHandler.js] Connection json file not found");
+            return "";
+        }
+    } catch (err) {
+        console.log("[connectionHandler.js]" + err);
     }
 }
 

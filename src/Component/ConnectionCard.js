@@ -39,7 +39,7 @@ export default function WelcomePage(props) {
             }
         }
         if (connected.length === 0) navigation.navigate("Welcome");
-        setConnected(connected);
+        await setConnected(connected);
     }
 
     const connect = (computerName) => {

@@ -12,6 +12,9 @@ export default function CommunicationTest() {
     const [msg, setMsg] = useState("");
     const handleMsg = (msg) => setMsg(msg);
 
+    const [IP, setIP] = useState("");
+    const handleIP = (IP) => setIP(IP);
+
     const backgroundStyle = {
         flex: 1,
         backgroundColor: "#DAE2E1",
@@ -22,8 +25,9 @@ export default function CommunicationTest() {
         console.log("[CommunicationTest.js] now send msg \"" + msg + "\"");
         // send by http req
         try{
+            connectURL = "http://" + IP + ":5000/";
             const res = await fetch(
-                "http://192.168.0.34:5000/",{
+                connectURL,{
                     method: "POST",
                     headers: new Headers({
                         "Content-Type": "application/json"
@@ -42,7 +46,13 @@ export default function CommunicationTest() {
             <Text style={{ position: 'absolute', left: 10, top: 10, fontSize: 25, fontWeight: "bold" }}>PC Connection Test</Text>
             <Text style={{ fontSize: 20, alignSelf: "flex-start", marginHorizontal: 10, marginVertical: 15 }}>Enter demo text:</Text>
             <TextInput
-                placeholder='msg'
+                placeholder="IP"
+                keyboardType="numeric"
+                style={{ borderColor: "#999999", borderWidth: 1, margin: 10 }}
+                onChangeText={(value) => handleIP(value)}
+            />
+            <TextInput
+                placeholder="msg"
                 style={{ borderColor: "#999999", borderWidth: 1, marginHorizontal: 10 }}
                 onChangeText={(value) => handleMsg(value)}
             />

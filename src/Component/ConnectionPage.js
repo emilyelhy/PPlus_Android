@@ -19,8 +19,11 @@ export default function ConnectionPage() {
     useEffect(() => {
         const updateConnections = async () => {
             var result = await getConnected();
-            result = JSON.parse(result);
-            setConnections(result);
+            if (result.length > 0){
+                result = JSON.parse(result);
+                setConnections(result);
+            }
+            // console.log(result);
         }
         updateConnections();
     }, [connections]);

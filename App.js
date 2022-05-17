@@ -42,15 +42,16 @@ const App = () => {
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			{/* <NavigationContainer>
+			<NavigationContainer>
 				<Stack.Navigator screenOptions={{ headerShown: false }}>
 					<Stack.Screen name="Connections" component={ConnectionPage} />
 					<Stack.Screen name="Welcome" component={WelcomePage} />
 					<Stack.Screen name="Confirmation" component={ConfirmationPage} />
 					<Stack.Screen name="Toggle" component={TogglePage} />
+					<Stack.Screen name="CameraSetting" component={CameraSettingPage} />
 				</Stack.Navigator>
-			</NavigationContainer> */}
-			<CameraSettingPage></CameraSettingPage>
+			</NavigationContainer>
+			{/* <CameraSettingPage></CameraSettingPage> */}
 			{/* <CommunicationTest></CommunicationTest> */}
 			<FlashMessage position="bottom" />
 		</SafeAreaView>

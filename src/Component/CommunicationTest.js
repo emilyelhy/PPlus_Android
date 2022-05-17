@@ -4,7 +4,6 @@ import {
     TextInput,
     TouchableOpacity,
     Text,
-    View,
 } from 'react-native';
 import { showMessage } from "react-native-flash-message";
 

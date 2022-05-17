@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Camera } from 'react-native-vision-camera';
 
 export default function TogglePage({ route }) {
     const { computerName } = route.params;
@@ -24,36 +25,66 @@ export default function TogglePage({ route }) {
 
     const disconnect = () => {
         // stop streaming with computer (skip for now)
-        
+
         // navigate to connections page
         navigation.navigate("Connections");
+    }
+
+    const initCamera = async () => {
+        if (!enableCamera) {
+            const cameraPermission = await Camera.requestCameraPermission();
+            if (cameraPermission !== "authorized") {
+                setEnableCamera(false);
+                return;
+            }
+            console.log("[TogglePage.js] cameraPermission: " + cameraPermission);
+        }
+        handleEnableCamera();
+    }
+
+    const initMicrophone = async () => {
+        if (!enableMicrophone) {
+            const microphonePermission = await Camera.requestMicrophonePermission();
+            if (microphonePermission !== "authorized") {
+                setEnableMicrophone(false);
+                return;
+            }
+            console.log("[TogglePage.js] microphonePermission: " + microphonePermission);
+        }
+        handleEnableMicrophone();
     }
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: "space-around", backgroundColor: "#DAE2E1" }}>
             <View>
-                <Text style={{ color: "#7B8D93", fontSize: 24, alignSelf: "center" }}>Connected to: {computerName}</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}>
+                <Text style={{ color: "#7B8D93", fontSize: 21, alignSelf: "center" }}>Connected to: {computerName}</Text>
+                <TouchableOpacity
+                    style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
+                >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Camera</Text>
                     <Switch
                         style={{ transform: [{ scale: 1.3 }] }}
                         trackColor={{ true: "#85BBB6", false: "#D5D5D5" }}
                         thumbColor={enableCamera ? "#469287" : "#F1F4F7"}
-                        onValueChange={handleEnableCamera}
+                        onValueChange={initCamera}
                         value={enableCamera}
                     />
-                </View>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
+                >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Microphone</Text>
                     <Switch
                         style={{ transform: [{ scale: 1.3 }] }}
                         trackColor={{ true: "#85BBB6", false: "#D5D5D5" }}
                         thumbColor={enableMicrophone ? "#469287" : "#F1F4F7"}
-                        onValueChange={handleEnableMicrophone}
+                        onValueChange={initMicrophone}
                         value={enableMicrophone}
                     />
-                </View>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
+                >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Speaker</Text>
                     <Switch
                         style={{ transform: [{ scale: 1.3 }] }}
@@ -62,7 +93,7 @@ export default function TogglePage({ route }) {
                         onValueChange={handleEnableSpeaker}
                         value={enableSpeaker}
                     />
-                </View>
+                </TouchableOpacity>
             </View>
             <TouchableOpacity
                 onPress={disconnect}

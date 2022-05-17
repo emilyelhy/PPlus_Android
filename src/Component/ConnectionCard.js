@@ -11,7 +11,8 @@ import {
     SafeAreaView,
     Text,
     View,
-    Button
+    Button,
+    Dimensions,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -23,6 +24,8 @@ import { setConnected, getConnected } from "../connectionHandler";
 export default function WelcomePage(props) {
     const navigation = useNavigation();
     const { computerName, OS, linkedDate, lastActiveDate } = props;
+
+    const windowWidth = Dimensions.get('window').width;
 
     const backgroundStyle = {
         flex: 1,
@@ -51,7 +54,7 @@ export default function WelcomePage(props) {
 
     return (
         <SafeAreaView style={backgroundStyle}>
-            <View style={{ backgroundColor: "#E8E8E8", minHeight: 220, width: 177, justifyContent: "space-evenly", borderRadius: 10, borderColor: "#B0B0B9", borderWidth: 1 }} >
+            <View style={{ backgroundColor: "#E8E8E8", minHeight: 220, width: (windowWidth / 2 - 30), justifyContent: "space-evenly", borderRadius: 10, borderColor: "#B0B0B9", borderWidth: 1 }} >
                 <View style={{ position: "absolute", alignSelf: "flex-end" }}>
                     <Entypo.Button name="cross" color="#444444" size={20} onPress={() => delConnection(computerName)} backgroundColor="#E8E8E800" style={{ padding: 0 }} iconStyle={{ marginRight: 0 }}></Entypo.Button>
                 </View>

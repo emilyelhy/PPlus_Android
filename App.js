@@ -22,6 +22,7 @@ import WelcomePage from './src/Component/WelcomePage';
 import ConnectionPage from './src/Component/ConnectionPage';
 import ConfirmationPage from './src/Component/ConfirmationPage';
 import TogglePage from './src/Component/TogglePage';
+import CameraSettingPage from './src/Component/CameraSettingPage';
 import CommunicationTest from './src/Component/CommunicationTest';
 
 LogBox.ignoreLogs([
@@ -49,7 +50,8 @@ const App = () => {
 					<Stack.Screen name="Toggle" component={TogglePage} />
 				</Stack.Navigator>
 			</NavigationContainer> */}
-			<CommunicationTest></CommunicationTest>
+			<CameraSettingPage></CameraSettingPage>
+			{/* <CommunicationTest></CommunicationTest> */}
 			<FlashMessage position="bottom" />
 		</SafeAreaView>
 	);

@@ -60,7 +60,7 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-package-lock.js
+package-lock.json
 
 # come out from nowhere???
 MOK.der

@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/slider": "^4.2.2",
     "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.9.0",
     "fbjs": "^3.0.4",
@@ -21,6 +22,7 @@
     "react-native-flash-message": "^0.2.1",
     "react-native-fs": "^2.19.0",
     "react-native-gesture-handler": "^1.7.0",
+    "react-native-radio-buttons-group": "^2.2.10",
     "react-native-safe-area-context": "^3.1.4",
     "react-native-screens": "^2.18.1",
     "react-native-svg": "^12.3.0",

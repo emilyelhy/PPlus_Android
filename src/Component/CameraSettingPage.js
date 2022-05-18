@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -18,6 +18,10 @@ export default function CameraSettingPage({ route }) {
 
     const navigation = useNavigation();
 
+    const devices = useCameraDevices('wide-angle-camera');
+    const [cameraPosition, setCameraPosition] = useState("back");
+    const device = devices[cameraPosition];
+
     const [openReso, setOpenReso] = useState(false);
     const [resoValue, setResoValue] = useState("1080P");
     const resoItems = [{ label: "1080P", value: "1080P" }, { label: "720P", value: "720P" }, { label: "480P", value: "480P" }, { label: "360P", value: "360P" }];
@@ -27,12 +31,12 @@ export default function CameraSettingPage({ route }) {
     const FPSItems = [{ label: "30 FPS", value: 30 }, { label: "45 FPS", value: 45 }, { label: "60 FPS", value: 60 }];
 
     const [zoom, setZoom] = useState(1.0);
-    const handleZoom = (value) => { setZoom(value.toFixed(1)) }
+    const handleZoom = (value) => { setZoom(value.toFixed(1).toString()) }
 
     const radioButtonsData = [{
         id: "1",
         label: "Rear",
-        value: "rear",
+        value: "back",
         selected: true
     }, {
         id: "2",
@@ -44,19 +48,9 @@ export default function CameraSettingPage({ route }) {
     const handleRadioButtons = (value) => {
         setRadioButtons(value)
         for (var i = 0; i < value.length; i++) {
-            if (value[i].selected === true) handleCamChoose(value[i].value);
+            if (value[i].selected === true) setCameraPosition(value[i].value);
         }
     }
-
-    const devices = useCameraDevices('wide-angle-camera');
-    var device = devices.back;
-    const [camChoose, setCamChoose] = useState("rear");
-    const handleCamChoose = (value) => {
-        if (value === "rear") device = devices.back;
-        else if (value === "front") device = devices.front;
-        setCamChoose(value);
-    }
-
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: "center", backgroundColor: "#DAE2E1" }}>
@@ -71,7 +65,7 @@ export default function CameraSettingPage({ route }) {
                                 device={device}
                                 isActive={true}
                                 fps={FPSValue}
-                                enableZoomGesture={true}
+                                zoom={parseFloat(zoom)}
                             />
                         }
                     </View>
@@ -112,6 +106,7 @@ export default function CameraSettingPage({ route }) {
                             maximumValue={device == null ? 1 : device.maxZoom}
                             minimumTrackTintColor="#989BA3"
                             maximumTrackTintColor="#989BA3"
+                            thumbTintColor="#7B8D93"
                             step={0.1}
                             onValueChange={(value) => handleZoom(value)}
                         />

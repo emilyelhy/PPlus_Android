@@ -23,6 +23,8 @@ import ConnectionPage from './src/Component/ConnectionPage';
 import ConfirmationPage from './src/Component/ConfirmationPage';
 import TogglePage from './src/Component/TogglePage';
 import CameraSettingPage from './src/Component/CameraSettingPage';
+import MicrophoneSettingPage from './src/Component/MicrophoneSettingPage';
+import SpeakerSettingPage from './src/Component/SpeakerSettingPage';
 import CommunicationTest from './src/Component/CommunicationTest';
 
 LogBox.ignoreLogs([
@@ -49,9 +51,11 @@ const App = () => {
 					<Stack.Screen name="Confirmation" component={ConfirmationPage} />
 					<Stack.Screen name="Toggle" component={TogglePage} />
 					<Stack.Screen name="CameraSetting" component={CameraSettingPage} />
+					<Stack.Screen name="MicrophoneSetting" component={MicrophoneSettingPage} />
+					<Stack.Screen name="SpeakerSetting" component={SpeakerSettingPage} />
 				</Stack.Navigator>
 			</NavigationContainer>
-			{/* <CameraSettingPage></CameraSettingPage> */}
+			{/* <MicrophoneSettingPage></MicrophoneSettingPage> */}
 			{/* <CommunicationTest></CommunicationTest> */}
 			<FlashMessage position="bottom" />
 		</SafeAreaView>

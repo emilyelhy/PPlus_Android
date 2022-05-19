@@ -74,6 +74,7 @@ export default function TogglePage({ route }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     disabled={!enableMicrophone}
+                    onPress={() => navigation.navigate("MicrophoneSetting", { computerName })}
                     style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
                 >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Microphone</Text>
@@ -87,6 +88,7 @@ export default function TogglePage({ route }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     disabled={!enableSpeaker}
+                    onPress={() => navigation.navigate("SpeakerSetting", { computerName })}
                     style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
                 >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Speaker</Text>

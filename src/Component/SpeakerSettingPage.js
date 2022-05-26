@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -9,18 +9,18 @@ import Slider from '@react-native-community/slider';
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation } from '@react-navigation/native';
 
+import { SettingContext } from '../contextHandler';
+
 export default function SpaekerSettingPage({ route }) {
     const { computerName } = route.params;
 
     const navigation = useNavigation();
+    const { volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo } = useContext(SettingContext);
 
-    const [volume, setVolume] = useState(0.0);
     const handleVolume = (value) => { setVolume(value.toFixed(1).toString()) };
 
-    const [buffer, setBuffer] = useState(0.0);
-    const handleBuffer = (value) => { setBuffer(value.toFixed(1).toString()) };
+    const handleBuffer = (value) => { setSpeakerBuffer(value.toFixed(1).toString()) };
 
-    const [stereo, setStereo] = useState(false);
     const handleStereo = () => { setStereo(!stereo) };
 
     return (
@@ -41,13 +41,14 @@ export default function SpaekerSettingPage({ route }) {
                         maximumTrackTintColor="#989BA3"
                         thumbTintColor="#7B8D93"
                         step={0.1}
-                        onValueChange={(value) => handleVolume(value)}
+                        value={parseFloat(volume)}
+                        onSlidingComplete={(value) => handleVolume(value)}
                     />
                 </View>
                 <View style={{ backgroundColor: "#E8E8E8", paddingTop: '1%', marginHorizontal: '8%', marginTop: '3%' }}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: "3%" }}>
                         <Text style={{ color: "#7B8D93", fontSize: 18, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>Buffer size</Text>
-                        <Text style={{ color: "#7B8D93", fontSize: 15, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>{buffer}</Text>
+                        <Text style={{ color: "#7B8D93", fontSize: 15, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>{speakerBuffer}</Text>
                     </View>
                     <Slider
                         style={{ width: 300, height: 40 }}
@@ -57,7 +58,8 @@ export default function SpaekerSettingPage({ route }) {
                         maximumTrackTintColor="#989BA3"
                         thumbTintColor="#7B8D93"
                         step={0.1}
-                        onValueChange={(value) => handleBuffer(value)}
+                        value={parseFloat(speakerBuffer)}
+                        onSlidingComplete={(value) => handleBuffer(value)}
                     />
                 </View>
                 <View style={{ flexDirection: "row", backgroundColor: "#E8E8E8", padding: '1%', marginHorizontal: '8%', marginTop: '3%', justifyContent: "space-between" }}>

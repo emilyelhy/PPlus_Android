@@ -1,6 +1,5 @@
-import React, { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
-const CameraContext = createContext({reso: "360P"});
-const ToggleContext = createContext();
+const SettingContext = createContext();
 
-export { CameraContext, ToggleContext };
+export { SettingContext };

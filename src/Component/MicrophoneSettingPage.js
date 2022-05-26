@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -9,18 +9,18 @@ import Slider from '@react-native-community/slider';
 import CheckBox from '@react-native-community/checkbox';
 import { useNavigation } from '@react-navigation/native';
 
+import { SettingContext } from '../contextHandler';
+
 export default function MicrophoneSettingPage({ route }) {
     const { computerName } = route.params;
 
     const navigation = useNavigation();
+    const { sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise } = useContext(SettingContext);
 
-    const [sensitivity, setSensitivity] = useState(0.0);
     const handleSensitivity = (value) => { setSensitivity(value.toFixed(1).toString()) };
 
-    const [buffer, setBuffer] = useState(0.0);
-    const handleBuffer = (value) => { setBuffer(value.toFixed(1).toString()) };
+    const handleBuffer = (value) => { setMicBuffer(value.toFixed(1).toString()) };
 
-    const [noise, setNoise] = useState(false);
     const handleNoise = () => { setNoise(!noise) };
 
     return (
@@ -41,13 +41,14 @@ export default function MicrophoneSettingPage({ route }) {
                         maximumTrackTintColor="#989BA3"
                         thumbTintColor="#7B8D93"
                         step={0.1}
-                        onValueChange={(value) => handleSensitivity(value)}
+                        value={parseFloat(sensitivity)}
+                        onSlidingComplete={(value) => handleSensitivity(value)}
                     />
                 </View>
                 <View style={{ backgroundColor: "#E8E8E8", paddingTop: '1%', marginHorizontal: '8%', marginTop: '3%' }}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: "3%" }}>
                         <Text style={{ color: "#7B8D93", fontSize: 18, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>Buffer size</Text>
-                        <Text style={{ color: "#7B8D93", fontSize: 15, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>{buffer}</Text>
+                        <Text style={{ color: "#7B8D93", fontSize: 15, fontWeight: "500", marginHorizontal: "3%", alignSelf: "center" }}>{micBuffer}</Text>
                     </View>
                     <Slider
                         style={{ width: 300, height: 40 }}
@@ -57,7 +58,8 @@ export default function MicrophoneSettingPage({ route }) {
                         maximumTrackTintColor="#989BA3"
                         thumbTintColor="#7B8D93"
                         step={0.1}
-                        onValueChange={(value) => handleBuffer(value)}
+                        value={parseFloat(micBuffer)}
+                        onSlidingComplete={(value) => handleBuffer(value)}
                     />
                 </View>
                 <View style={{ flexDirection: "row", backgroundColor: "#E8E8E8", padding: '1%', marginHorizontal: '8%', marginTop: '3%', justifyContent: "space-between" }}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -8,11 +8,24 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Camera } from 'react-native-vision-camera';
+import {
+    RTCPeerConnection,
+    RTCIceCandidate,
+    RTCSessionDescription,
+    RTCView,
+    MediaStream,
+    MediaStreamTrack,
+    mediaDevices,
+    registerGlobals
+} from 'react-native-webrtc';
+
+import { SettingContext } from '../contextHandler';
 
 export default function TogglePage({ route }) {
-    const { computerName } = route.params;
+    const { computerName, ipAddress } = route.params;
 
     const navigation = useNavigation();
+    const { WS } = useContext(SettingContext);
 
     const [enableCamera, setEnableCamera] = useState(false);
     const handleEnableCamera = () => setEnableCamera(!enableCamera);
@@ -53,6 +66,26 @@ export default function TogglePage({ route }) {
         }
         handleEnableMicrophone();
     }
+
+
+    const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+    const pc = new RTCPeerConnection(configuration);
+    useEffect(() => {
+        pc.createOffer().then(desc => {
+            pc.setLocalDescription(desc).then(() => {
+                // Send pc.localDescription to peer
+                const data = {
+                    type: "android_offer",
+                    pc_ip: ipAddress,
+                    offer: pc.localDescription
+                }
+                WS.send(JSON.stringify(data));
+                WS.onmessage = (e) => {
+                    console.log(e.data);
+                };
+            });
+        });
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: "space-around", backgroundColor: "#DAE2E1" }}>

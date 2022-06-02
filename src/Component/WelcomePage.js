@@ -41,20 +41,27 @@ export default function WelcomePage() {
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
 		if (connectData.current.port === 0) showMessage({ message: "Please enter port first" });
-		const computer = findInfo(connectData.current);
-		if (!computer) {
-			showMessage({ message: "Error when connecting" });
-			return;
-		}
-		navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
-		// const data = {
-		// 	type: "android_connect_pc",
-		// 	pc_ip: connectData.current.ipAddress
+		// const computer = findInfo(connectData.current);
+		// if (!computer) {
+		// 	showMessage({ message: "Error when connecting" });
+		// 	return;
 		// }
-		// WS.send(JSON.stringify(data))
-		// WS.onmessage = (e) => {
-		// 	if(e.data.success !== true) showMessage({ message: "Error when connecting" });
-		// };
+		// navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
+		const data = {
+			type: "android_connect_pc",
+			pc_ip: connectData.current.ipAddress
+		}
+		WS.send(JSON.stringify(data))
+		WS.onmessage = (e) => {
+			e.data = JSON.parse(e.data);
+			console.log(e.data);
+			var lastActiveDate = new Date(e.data.last_active);
+			lastActiveDate = lastActiveDate.getDate().toString().padStart(2, '0') + "/" +  (lastActiveDate.getMonth()+1).toString().padStart(2, '0') + "/" + lastActiveDate.getFullYear();
+			var linkedDate = new Date(e.data.linked_date);
+			linkedDate = linkedDate.getDate().toString().padStart(2, '0') + "/" +  (linkedDate.getMonth()+1).toString().padStart(2, '0') + "/" + linkedDate.getFullYear();
+			if(e.data.success !== true) showMessage({ message: "Error when connecting" });
+			else navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: e.data.computer_name, OS: e.data.OS, linkedDate: linkedDate, lastActiveDate: lastActiveDate });
+		};
 	}
 
 	const CopyLink = () => {

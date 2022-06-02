@@ -46,7 +46,7 @@ const App = () => {
 	};
 
 	// context for camera setting
-	const [resoValue, setResoValue] = useState("1080P");
+	const [resoValue, setResoValue] = useState(1080);
     const [FPSValue, setFPSValue] = useState(30);
     const [zoom, setZoom] = useState(1.0);
     const [cameraPosition, setCameraPosition] = useState("back");
@@ -80,8 +80,8 @@ const App = () => {
 			tempWS.onopen = () => {
 				const data = {
 					type: "android_connect_server",
-					mac: DEVICE_NAME,
-					name: DEVICE_MAC
+					mac: DEVICE_MAC,
+					name: DEVICE_NAME
 				};
 				tempWS.send(JSON.stringify(data));
 				console.log("[App.js] deviceName: " + DEVICE_NAME);

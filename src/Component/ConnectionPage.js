@@ -49,6 +49,7 @@ export default function ConnectionPage() {
                         OS={item.OS}
                         linkedDate={item.linkedDate}
                         lastActiveDate={item.lastActiveDate}
+                        ipAddress={item.ipAddress}
                     />
                 )}
             />

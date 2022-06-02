@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useContext} from 'react';
 import {
     SafeAreaView,
     Text,
@@ -20,10 +20,13 @@ import { useNavigation } from '@react-navigation/native';
 
 // import { connections } from "../Connection.json";
 import { setConnected, getConnected } from "../connectionHandler";
+import { SettingContext } from '../contextHandler';
 
 export default function WelcomePage(props) {
     const navigation = useNavigation();
-    const { computerName, OS, linkedDate, lastActiveDate } = props;
+    const { computerName, OS, linkedDate, lastActiveDate, ipAddress } = props;
+
+    const { WS } = useContext(SettingContext);
 
     const windowWidth = Dimensions.get('window').width;
 
@@ -41,6 +44,16 @@ export default function WelcomePage(props) {
                 break;
             }
         }
+
+        const data = {
+            type: "android_disconnect_pc",
+            pc_ip: ipAddress
+        }
+        WS.send(JSON.stringify(data));
+        WS.onmessage = (e) => {
+            console.log(e.data);
+        };
+
         if (connected.length === 0) navigation.navigate("Welcome");
         await setConnected(connected);
     }
@@ -49,7 +62,7 @@ export default function WelcomePage(props) {
         // start streaming with computer (skip for now)
 
         // navigate to toggle page
-        navigation.navigate("Toggle", {computerName});
+        navigation.navigate("Toggle", props);
     }
 
     return (
@@ -64,8 +77,8 @@ export default function WelcomePage(props) {
                 <View style={{ alignItems: "center" }}>
                     <Text style={{ color: "#7B8D93", fontWeight: "500", fontSize: 15 }}>{computerName}</Text>
                     <Text style={{ color: "#7B8D93" }}>{OS}</Text>
-                    <Text style={{ color: "#7B8D93", fontWeight: "400" }}>Linked: {linkedDate}</Text>
-                    <Text style={{ color: "#7B8D93", fontWeight: "400" }}>Last active: {lastActiveDate}</Text>
+                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13 }}>Linked: {linkedDate}</Text>
+                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13 }}>Last active: {lastActiveDate}</Text>
                 </View>
                 <View style={{ alignSelf: "center", width: "70%", marginBottom: "8%" }}>
                     <Button onPress={() => connect(computerName)} title="CONNECT" color="#989da5" />

@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import {
 	SafeAreaView,
@@ -17,6 +17,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LogBox } from "react-native";
 import FlashMessage from "react-native-flash-message";
+import DeviceInfo from 'react-native-device-info';
 
 import WelcomePage from './src/Component/WelcomePage';
 import ConnectionPage from './src/Component/ConnectionPage';
@@ -27,6 +28,8 @@ import MicrophoneSettingPage from './src/Component/MicrophoneSettingPage';
 import SpeakerSettingPage from './src/Component/SpeakerSettingPage';
 import CommunicationTest from './src/Component/CommunicationTest';
 import { SettingContext } from './src/contextHandler';
+
+const SIGNALING_URL = "ws://192.168.0.106:8886";
 
 LogBox.ignoreLogs([
 	"exported from 'deprecated-react-native-prop-types'.",
@@ -58,10 +61,42 @@ const App = () => {
     const [speakerBuffer, setSpeakerBuffer] = useState(0.0);
     const [stereo, setStereo] = useState(false);
 
+	// context for connections
+	// const WS = new WebSocket(SIGNALING_URL);
+	var tempWS;
+	const [WS, setWS] = useState();
+	const [DEVICE_NAME, setDeviceName] = useState();
+	const [DEVICE_MAC, setDeviceMac] = useState();
+	
+	useEffect(() => {
+		const getDeviceInfo = async () => {
+			setDeviceName(await DeviceInfo.getDevice());
+			setDeviceMac(await DeviceInfo.getMacAddress());
+        }
+		getDeviceInfo();
+		if(DEVICE_NAME != null && DEVICE_MAC != null){
+			tempWS = new WebSocket(SIGNALING_URL);
+			setWS(tempWS);
+			tempWS.onopen = () => {
+				const data = {
+					type: "android_connect_server",
+					mac: DEVICE_NAME,
+					name: DEVICE_MAC
+				};
+				tempWS.send(JSON.stringify(data));
+				console.log("[App.js] deviceName: " + DEVICE_NAME);
+				console.log("[App.js] deviceMAC: " + DEVICE_MAC);
+			};
+			tempWS.onmessage = (e) => {
+				console.log(e.data);
+			};
+		}
+    }, [DEVICE_NAME, DEVICE_MAC]);
+
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo }}>
+			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, DEVICE_NAME, DEVICE_MAC }}>
 				<NavigationContainer>
 					<Stack.Navigator screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="Connections" component={ConnectionPage} />

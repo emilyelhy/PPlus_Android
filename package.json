@@ -19,6 +19,7 @@
     "fbjs": "^3.0.4",
     "react": "17.0.2",
     "react-native": "0.68.0",
+    "react-native-device-info": "^8.7.1",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-flash-message": "^0.2.1",
     "react-native-fs": "^2.19.0",
@@ -28,7 +29,8 @@
     "react-native-screens": "^2.18.1",
     "react-native-svg": "^12.3.0",
     "react-native-vector-icons": "^9.1.0",
-    "react-native-vision-camera": "^2.13.3"
+    "react-native-vision-camera": "^2.13.3",
+    "react-native-webrtc": "^1.100.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

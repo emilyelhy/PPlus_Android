@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import {
 	SafeAreaView,
 	Text,
@@ -21,6 +21,7 @@ import { showMessage } from "react-native-flash-message";
 import { useNavigation } from '@react-navigation/native';
 
 import { findInfo } from '../connectionHandler';
+import { SettingContext } from '../contextHandler';
 
 export default function WelcomePage() {
 	const isDarkMode = useColorScheme() === 'dark';
@@ -31,6 +32,7 @@ export default function WelcomePage() {
 	};
 
 	const navigation = useNavigation();
+	const { WS } = useContext(SettingContext);
 
 	const connectData = useRef({ ipAddress: "", port: 0 });
 	const handleIPAddress = (value) => { connectData.current.ipAddress = value; };
@@ -39,14 +41,20 @@ export default function WelcomePage() {
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
 		if (connectData.current.port === 0) showMessage({ message: "Please enter port first" });
-		// console.log("IPAddress: " + connectData.current.ipAddress);
-		// console.log("Port: " + connectData.current.port);
 		const computer = findInfo(connectData.current);
 		if (!computer) {
 			showMessage({ message: "Error when connecting" });
 			return;
 		}
 		navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
+		// const data = {
+		// 	type: "android_connect_pc",
+		// 	pc_ip: connectData.current.ipAddress
+		// }
+		// WS.send(JSON.stringify(data))
+		// WS.onmessage = (e) => {
+		// 	if(e.data.success !== true) showMessage({ message: "Error when connecting" });
+		// };
 	}
 
 	const CopyLink = () => {

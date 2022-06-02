@@ -23,21 +23,31 @@ export default function CommunicationTest() {
     const sendMsg = async () => {
         console.log("[CommunicationTest.js] now send msg \"" + msg + "\"");
         // send by http req
-        try{
-            connectURL = "http://" + IP + ":5000/";
+        try {
+            var connectURL = "http://" + IP + ":5000/";
             const res = await fetch(
-                connectURL,{
-                    method: "POST",
-                    headers: new Headers({
-                        "Content-Type": "application/json"
-                      }),
-                    body: JSON.stringify({msg: msg})
-                }
+                connectURL, {
+                method: "POST",
+                headers: new Headers({
+                    "Content-Type": "application/json"
+                }),
+                body: JSON.stringify({ msg: msg })
+            }
             );
-            if(res.status === 200) showMessage({ message: "Msg sent successfully" });
+            if (res.status === 200) showMessage({ message: "Msg sent successfully" });
         } catch (error) {
             console.log("[CommunicationTest.js] " + error);
         }
+    }
+
+    const wsConnect = async () => {
+        var ws = new WebSocket("ws://" + IP +":8886");
+        ws.onopen = () => {
+            ws.send(msg);
+        };
+        ws.onmessage = (e) => {
+            console.log(e.data);
+        };
     }
 
     return (
@@ -57,7 +67,7 @@ export default function CommunicationTest() {
             />
             <TouchableOpacity
                 style={{ backgroundColor: "#989DA5", alignSelf: "center", marginVertical: 15 }}
-                onPress={sendMsg}
+                onPress={wsConnect}
             >
                 <Text style={{ alignSelf: "center", padding: 10 }}>SEND</Text>
             </TouchableOpacity>

@@ -18,6 +18,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LogBox } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import DeviceInfo from 'react-native-device-info';
+import {
+    RTCPeerConnection,
+    RTCIceCandidate,
+    RTCSessionDescription,
+    RTCView,
+    MediaStream,
+    MediaStreamTrack,
+    mediaDevices,
+    registerGlobals
+} from 'react-native-webrtc';
 
 import WelcomePage from './src/Component/WelcomePage';
 import ConnectionPage from './src/Component/ConnectionPage';
@@ -61,12 +71,19 @@ const App = () => {
     const [speakerBuffer, setSpeakerBuffer] = useState(0.0);
     const [stereo, setStereo] = useState(false);
 
+	// context for toggle page
+    const [enableCamera, setEnableCamera] = useState(false);
+    const [enableMicrophone, setEnableMicrophone] = useState(false);
+    const [enableSpeaker, setEnableSpeaker] = useState(false);
+
 	// context for connections
 	// const WS = new WebSocket(SIGNALING_URL);
 	var tempWS;
 	const [WS, setWS] = useState();
 	const [DEVICE_NAME, setDeviceName] = useState();
 	const [DEVICE_MAC, setDeviceMac] = useState();
+	const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
+    const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(configuration));
 	
 	useEffect(() => {
 		const getDeviceInfo = async () => {
@@ -96,7 +113,7 @@ const App = () => {
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, DEVICE_NAME, DEVICE_MAC }}>
+			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, DEVICE_NAME, DEVICE_MAC, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection }}>
 				<NavigationContainer>
 					<Stack.Navigator screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="Connections" component={ConnectionPage} />

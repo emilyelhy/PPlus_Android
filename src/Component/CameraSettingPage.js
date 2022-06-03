@@ -25,11 +25,10 @@ import {
 import { SettingContext } from '../contextHandler';
 
 export default function CameraSettingPage({ route }) {
-    const { computerName, ipAddress } = route.params;
+    const { computerName } = route.params;
 
     const navigation = useNavigation();
-    const { resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, WS } = useContext(SettingContext);
-
+    const { resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, enableMicrophone, peerConnection } = useContext(SettingContext);
     const [openReso, setOpenReso] = useState(false);
     const resoItems = [{ label: "1080P", value: 1080 }, { label: "720P", value: 720 }, { label: "480P", value: 480 }, { label: "360P", value: 360 }];
 
@@ -61,7 +60,7 @@ export default function CameraSettingPage({ route }) {
     useEffect(() => {
         let isFront = cameraPosition === "back" ? false : true;
         mediaDevices.enumerateDevices().then(sourceInfos => {
-            console.log(sourceInfos);
+            // console.log(sourceInfos);
             let videoSourceId;
             for (let i = 0; i < sourceInfos.length; i++) {
                 const sourceInfo = sourceInfos[i];
@@ -70,7 +69,7 @@ export default function CameraSettingPage({ route }) {
                 }
             }
             mediaDevices.getUserMedia({
-                audio: true,
+                audio: enableMicrophone,
                 video: {
                     width: resoValue,
                     height: resoValue * 16 / 9,
@@ -81,6 +80,9 @@ export default function CameraSettingPage({ route }) {
             })
                 .then(stream => {
                     setLocalStream(stream);
+                    stream.getTracks().forEach((track) => {
+                        peerConnection.addTrack(track, stream);
+                    });
                 })
                 .catch(error => {
                     console.log("[CameraSettingPage.js]: " + error);

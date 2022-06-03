@@ -20,21 +20,21 @@ import {
 } from 'react-native-webrtc';
 
 import { SettingContext } from '../contextHandler';
+import { onAnswer } from '../serverHandler';
 
 export default function TogglePage({ route }) {
     const { computerName, ipAddress } = route.params;
 
     const navigation = useNavigation();
-    const { WS } = useContext(SettingContext);
+    const { WS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection } = useContext(SettingContext);
 
-    const [enableCamera, setEnableCamera] = useState(false);
     const handleEnableCamera = () => setEnableCamera(!enableCamera);
 
-    const [enableMicrophone, setEnableMicrophone] = useState(false);
     const handleEnableMicrophone = () => setEnableMicrophone(!enableMicrophone);
 
-    const [enableSpeaker, setEnableSpeaker] = useState(false);
     const handleEnableSpeaker = () => setEnableSpeaker(!enableSpeaker);
+
+    const [ready, setReady] = useState(false);
 
     const disconnect = () => {
         // stop streaming with computer (skip for now)
@@ -67,21 +67,27 @@ export default function TogglePage({ route }) {
         handleEnableMicrophone();
     }
 
-
-    const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
-    const pc = new RTCPeerConnection(configuration);
     useEffect(() => {
-        pc.createOffer().then(desc => {
-            pc.setLocalDescription(desc).then(() => {
+        peerConnection.createOffer().then(desc => {
+            peerConnection.setLocalDescription(desc).then(() => {
                 // Send pc.localDescription to peer
                 const data = {
                     type: "android_offer",
                     pc_ip: ipAddress,
-                    offer: pc.localDescription
+                    offer: peerConnection.localDescription
                 }
+                setPeerConnection(peerConnection);
+                console.log(peerConnection);
                 WS.send(JSON.stringify(data));
-                WS.onmessage = (e) => {
+                WS.onmessage = async (e) => {
                     console.log(e.data);
+                    e.data = JSON.parse(e.data);
+                    // wait for "pc_answer"
+                    // if hv pc_answer, set pc_answer using onAnswer from webrtc_test.js
+                    if(e.data.type === "server_pc_answer"){
+                        const result = await onAnswer(peerConnection, e.data.answer);
+                        setReady(result);
+                    }
                 };
             });
         });
@@ -103,6 +109,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableCamera ? "#469287" : "#F1F4F7"}
                         onValueChange={initCamera}
                         value={enableCamera}
+                        // disabled={!ready}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -117,6 +124,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableMicrophone ? "#469287" : "#F1F4F7"}
                         onValueChange={initMicrophone}
                         value={enableMicrophone}
+                        // disabled={!ready}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -131,6 +139,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableSpeaker ? "#469287" : "#F1F4F7"}
                         onValueChange={handleEnableSpeaker}
                         value={enableSpeaker}
+                        // disabled={!ready}
                     />
                 </TouchableOpacity>
             </View>

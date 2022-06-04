@@ -10,6 +10,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import RadioGroup from 'react-native-radio-buttons-group';
+import { showMessage } from "react-native-flash-message";
 
 import {
     RTCPeerConnection,
@@ -23,12 +24,13 @@ import {
 } from 'react-native-webrtc';
 
 import { SettingContext } from '../contextHandler';
+import { onAnswer } from '../serverHandler';
 
 export default function CameraSettingPage({ route }) {
-    const { computerName } = route.params;
+    const { computerName, ipAddress } = route.params;
 
     const navigation = useNavigation();
-    const { resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, enableMicrophone, peerConnection } = useContext(SettingContext);
+    const { resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, enableMicrophone, WS, peerConnection, setPeerConnection } = useContext(SettingContext);
     const [openReso, setOpenReso] = useState(false);
     const resoItems = [{ label: "1080P", value: 1080 }, { label: "720P", value: 720 }, { label: "480P", value: 480 }, { label: "360P", value: 360 }];
 
@@ -79,10 +81,7 @@ export default function CameraSettingPage({ route }) {
                 }
             })
                 .then(stream => {
-                    setLocalStream(stream);
-                    stream.getTracks().forEach((track) => {
-                        peerConnection.addTrack(track, stream);
-                    });
+                    streaming(stream);
                 })
                 .catch(error => {
                     console.log("[CameraSettingPage.js]: " + error);
@@ -90,6 +89,61 @@ export default function CameraSettingPage({ route }) {
         });
     }, [resoValue, FPSValue, cameraPosition]);
 
+    const streaming = (stream) => {
+        peerConnection.addStream(stream);
+        setLocalStream(stream);
+        console.log(stream);
+        // stream.getTracks().forEach((track) => {
+        //     console.log(track);
+        //     stream = stream.addTrack(track);
+        // });
+        peerConnection.addEventListener('icecandidate', e => icecandidateAdded(e));
+        sendOfferReq();
+    }
+
+    const icecandidateAdded = (e) => {
+        if(e.candidate){
+            const data = {
+                type: "android_candidate",
+                candidate: e.candidate.candidate,
+                sdpMLineIndex: e.candidate.sdpMLineIndex,
+                sdpMid: e.candidate.sdpMid,
+                pc_ip: ipAddress
+            };
+            WS.send(JSON.stringify(data));
+            console.log("[CameraSetting] Sent Ice candidate info");
+        }
+    }
+    
+    const sendOfferReq = async () => {
+        peerConnection.createOffer().then(desc => {
+            peerConnection.setLocalDescription(desc).then(() => {
+                // Send pc.localDescription to peer
+                const data = {
+                    type: "android_offer",
+                    pc_ip: ipAddress,
+                    offer: peerConnection.localDescription
+                };
+                setPeerConnection(peerConnection);
+                WS.send(JSON.stringify(data));
+                console.log("[CameraSetting] Sent sdp offer to server");
+            })
+            .catch((e) => {
+                showMessage({ message: "Error when connecting PC" });
+            });
+        });
+    }
+    
+    WS.onmessage = async (e) => {
+        e.data = JSON.parse(e.data);
+        console.log(e.data);
+        // wait for "pc_answer"
+        // if hv pc_answer, set pc_answer using onAnswer from webrtc_test.js
+        if(e.data.type === "server_pc_answer"){
+            await onAnswer(peerConnection, e.data.answer);
+        }
+    }
+    
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: "center", backgroundColor: "#DAE2E1" }}>
             <Text style={{ left: "3%", top: "2%", position: "absolute", fontSize: 25, fontWeight: "600", color: "#7B8D93" }}>Camera Setting</Text>

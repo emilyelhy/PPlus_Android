@@ -35,7 +35,7 @@ export default function ConfirmationPage({ route }) {
             for (let i = 0; i < result.length; i++){
                 if (result[i].computerName === computerName) {
                     console.log("Same")
-                    showMessage({ message: "Already connected to this computer" });
+                    showMessage({ message: "Already paired up with this computer" });
                     return;
                 }
             }

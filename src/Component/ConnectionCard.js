@@ -75,13 +75,13 @@ export default function WelcomePage(props) {
                     <MaterialCommunityIcons name="monitor" color="#444444" size={50}></MaterialCommunityIcons>
                 </View>
                 <View style={{ alignItems: "center" }}>
-                    <Text style={{ color: "#7B8D93", fontWeight: "500", fontSize: 15 }}>{computerName}</Text>
-                    <Text style={{ color: "#7B8D93" }}>{OS}</Text>
-                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13 }}>Linked: {linkedDate}</Text>
-                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13 }}>Last active: {lastActiveDate}</Text>
+                    <Text style={{ color: "#7B8D93", fontWeight: "500", fontSize: 15, textAlign: "center" }}>{computerName}</Text>
+                    <Text style={{ color: "#7B8D93", textAlign: "center" }}>{OS}</Text>
+                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13, textAlign: "center" }}>Linked: {linkedDate}</Text>
+                    <Text style={{ color: "#7B8D93", fontWeight: "400", fontSize: 13, textAlign: "center" }}>Last active: {lastActiveDate}</Text>
                 </View>
                 <View style={{ alignSelf: "center", width: "70%", marginBottom: "8%" }}>
-                    <Button onPress={() => connect(computerName)} title="CONNECT" color="#989da5" />
+                    <Button onPress={() => connect(computerName)} title="ENTER" color="#989da5" />
                 </View>
             </View>
         </SafeAreaView>

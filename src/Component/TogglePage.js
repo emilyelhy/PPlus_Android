@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { showMessage } from "react-native-flash-message";
 import { Camera } from 'react-native-vision-camera';
 import {
     RTCPeerConnection,
@@ -20,13 +21,12 @@ import {
 } from 'react-native-webrtc';
 
 import { SettingContext } from '../contextHandler';
-import { onAnswer } from '../serverHandler';
 
 export default function TogglePage({ route }) {
     const { computerName, ipAddress } = route.params;
 
     const navigation = useNavigation();
-    const { WS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection } = useContext(SettingContext);
+    const { WS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, ready, setReady } = useContext(SettingContext);
 
     const handleEnableCamera = () => setEnableCamera(!enableCamera);
 
@@ -34,13 +34,19 @@ export default function TogglePage({ route }) {
 
     const handleEnableSpeaker = () => setEnableSpeaker(!enableSpeaker);
 
-    const [ready, setReady] = useState(false);
-
     const disconnect = () => {
         // stop streaming with computer (skip for now)
 
         // navigate to connections page
-        navigation.navigate("Connections");
+        if(ready){
+            setReady(false);
+            setEnableCamera(false);
+            setEnableMicrophone(false);
+            setEnableSpeaker(false);
+            navigation.navigate("Connections");
+        } else{
+            sendPCConnReq();
+        }
     }
 
     const initCamera = async () => {
@@ -67,31 +73,19 @@ export default function TogglePage({ route }) {
         handleEnableMicrophone();
     }
 
-    useEffect(() => {
-        peerConnection.createOffer().then(desc => {
-            peerConnection.setLocalDescription(desc).then(() => {
-                // Send pc.localDescription to peer
-                const data = {
-                    type: "android_offer",
-                    pc_ip: ipAddress,
-                    offer: peerConnection.localDescription
-                }
-                setPeerConnection(peerConnection);
-                console.log(peerConnection);
-                WS.send(JSON.stringify(data));
-                WS.onmessage = async (e) => {
-                    console.log(e.data);
-                    e.data = JSON.parse(e.data);
-                    // wait for "pc_answer"
-                    // if hv pc_answer, set pc_answer using onAnswer from webrtc_test.js
-                    if(e.data.type === "server_pc_answer"){
-                        const result = await onAnswer(peerConnection, e.data.answer);
-                        setReady(result);
-                    }
-                };
-            });
-        });
-    }, []);
+    const sendPCConnReq = async () => {
+        const connData = {
+            type: "android_connect_pc",
+            pc_ip: ipAddress
+        };
+        WS.send(JSON.stringify(connData));
+        WS.onmessage = (e) => {
+            e.data = JSON.parse(e.data);
+            console.log(e.data);
+            if(e.data.type === "server_pc_accept") setReady(true);
+            else showMessage({ message: "Error when connecting" });
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: "space-around", backgroundColor: "#DAE2E1" }}>
@@ -99,7 +93,7 @@ export default function TogglePage({ route }) {
                 <Text style={{ color: "#7B8D93", fontSize: 21, alignSelf: "center" }}>Connected to: {computerName}</Text>
                 <TouchableOpacity
                     disabled={!enableCamera}
-                    onPress={() => navigation.navigate("CameraSetting", { computerName })}
+                    onPress={() => navigation.navigate("CameraSetting", { computerName, ipAddress })}
                     style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", padding: '3%', marginHorizontal: '8%', marginTop: '3%' }}
                 >
                     <Text style={{ color: "#7B8D93", fontSize: 22, fontWeight: "500", marginLeft: "3%" }}>Camera</Text>
@@ -109,7 +103,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableCamera ? "#469287" : "#F1F4F7"}
                         onValueChange={initCamera}
                         value={enableCamera}
-                        // disabled={!ready}
+                        disabled={!ready}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -124,7 +118,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableMicrophone ? "#469287" : "#F1F4F7"}
                         onValueChange={initMicrophone}
                         value={enableMicrophone}
-                        // disabled={!ready}
+                        disabled={!ready}
                     />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -139,7 +133,7 @@ export default function TogglePage({ route }) {
                         thumbColor={enableSpeaker ? "#469287" : "#F1F4F7"}
                         onValueChange={handleEnableSpeaker}
                         value={enableSpeaker}
-                        // disabled={!ready}
+                        disabled={!ready}
                     />
                 </TouchableOpacity>
             </View>
@@ -147,7 +141,7 @@ export default function TogglePage({ route }) {
                 onPress={disconnect}
                 style={{ backgroundColor: "#DAE2E1", justifyContent: "center", width: "50%", borderRadius: 5, alignSelf: "center", borderWidth: 1, borderColor: "#989DA5" }}
             >
-                <Text style={{ color: "#7B8D93", alignSelf: "center", fontSize: 18, marginVertical: '6%' }}>DISCONNECT</Text>
+                <Text style={{ color: "#7B8D93", alignSelf: "center", fontSize: 18, marginVertical: '6%' }}>{ready? "DISCONNECT" : "CONNECT"}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     )

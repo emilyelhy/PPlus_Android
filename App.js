@@ -75,6 +75,7 @@ const App = () => {
     const [enableCamera, setEnableCamera] = useState(false);
     const [enableMicrophone, setEnableMicrophone] = useState(false);
     const [enableSpeaker, setEnableSpeaker] = useState(false);
+    const [ready, setReady] = useState(false);
 
 	// context for connections
 	// const WS = new WebSocket(SIGNALING_URL);
@@ -111,7 +112,7 @@ const App = () => {
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, setWS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection }}>
+			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, setWS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, ready, setReady, peerConnection, setPeerConnection }}>
 				<NavigationContainer>
 					<Stack.Navigator screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="Connections" component={ConnectionPage} />

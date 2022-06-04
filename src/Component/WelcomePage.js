@@ -55,40 +55,35 @@ export default function WelcomePage() {
 		DEVICE_MAC = await DeviceInfo.getMacAddress();
 		var SIGNALING_URL = "ws://" + connectData.current.ipAddress + ":" + connectData.current.port.toString();
 		console.log("[WelcomePage.js] Signaling URL: " + SIGNALING_URL);
-		var tempWS = new WebSocket(SIGNALING_URL);
 		if(DEVICE_NAME != null && DEVICE_MAC != null){
+			var tempWS = new WebSocket(SIGNALING_URL);
+			console.log(tempWS);
 			setWS(tempWS);
 			tempWS.onopen = () => {
 				console.log("Opened")
 				const data = {
 					type: "android_connect_server",
 					mac: DEVICE_MAC,
-					name: DEVICE_NAME
+					name: DEVICE_NAME,
+					pc_ip: connectData.current.ipAddress
 				};
 				tempWS.send(JSON.stringify(data));
 				console.log("[App.js] deviceName: " + DEVICE_NAME);
 				console.log("[App.js] deviceMAC: " + DEVICE_MAC);
 			};
+			// send connection req
+			tempWS.onmessage = (e) => {
+				e.data = JSON.parse(e.data);
+				console.log(e.data);
+				if(e.data.type === "server_connect"){
+					var lastActiveDate = new Date();
+					lastActiveDate = lastActiveDate.getDate().toString().padStart(2, '0') + "/" +  (lastActiveDate.getMonth()+1).toString().padStart(2, '0') + "/" + lastActiveDate.getFullYear();
+					var linkedDate = new Date();
+					linkedDate = linkedDate.getDate().toString().padStart(2, '0') + "/" +  (linkedDate.getMonth()+1).toString().padStart(2, '0') + "/" + linkedDate.getFullYear();
+					navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: e.data.pc_name, OS: e.data.pc_os, linkedDate: linkedDate, lastActiveDate: lastActiveDate });
+				} else showMessage({ message: "Error when connecting server" });
+			};
 		}
-		// send connection req
-		tempWS.onmessage = (e) => {
-			e.data = JSON.parse(e.data);
-			console.log(e.data);
-			if(e.data.type === "server_connect"){
-				const connData = {
-					type: "android_connect_pc",
-					pc_ip: connectData.current.ipAddress
-				};
-				tempWS.send(JSON.stringify(connData));
-			}
-			if(e.data.type === "server_pc_accept"){
-				var lastActiveDate = new Date();
-				lastActiveDate = lastActiveDate.getDate().toString().padStart(2, '0') + "/" +  (lastActiveDate.getMonth()+1).toString().padStart(2, '0') + "/" + lastActiveDate.getFullYear();
-				var linkedDate = new Date();
-				linkedDate = linkedDate.getDate().toString().padStart(2, '0') + "/" +  (linkedDate.getMonth()+1).toString().padStart(2, '0') + "/" + linkedDate.getFullYear();
-				navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: e.data.computer_name, OS: e.data.OS, linkedDate: linkedDate, lastActiveDate: lastActiveDate });
-			}
-		};
 	}
 
 	const CopyLink = () => {

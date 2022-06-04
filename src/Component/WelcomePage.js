@@ -38,8 +38,7 @@ export default function WelcomePage() {
 	const connectData = useRef({ ipAddress: "", port: 0 });
 	const handleIPAddress = (value) => { connectData.current.ipAddress = value; };
 	const handlePort = (value) => { connectData.current.port = Number(value); };
-	const [DEVICE_NAME, setDeviceName] = useState();
-	const [DEVICE_MAC, setDeviceMac] = useState();
+	var DEVICE_NAME, DEVICE_MAC;
 
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
@@ -52,14 +51,15 @@ export default function WelcomePage() {
 		// navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
 		
 		// connect to ws
-		setDeviceName(await DeviceInfo.getDevice());
-		setDeviceMac(await DeviceInfo.getMacAddress());
+		DEVICE_NAME = await DeviceInfo.getDevice();
+		DEVICE_MAC = await DeviceInfo.getMacAddress();
 		var SIGNALING_URL = "ws://" + connectData.current.ipAddress + ":" + connectData.current.port.toString();
 		console.log("[WelcomePage.js] Signaling URL: " + SIGNALING_URL);
 		var tempWS = new WebSocket(SIGNALING_URL);
 		if(DEVICE_NAME != null && DEVICE_MAC != null){
 			setWS(tempWS);
 			tempWS.onopen = () => {
+				console.log("Opened")
 				const data = {
 					type: "android_connect_server",
 					mac: DEVICE_MAC,
@@ -69,25 +69,25 @@ export default function WelcomePage() {
 				console.log("[App.js] deviceName: " + DEVICE_NAME);
 				console.log("[App.js] deviceMAC: " + DEVICE_MAC);
 			};
-			tempWS.onmessage = (e) => {
-				console.log(e.data);
-			};
 		}
 		// send connection req
-		const data = {
-			type: "android_connect_pc",
-			pc_ip: connectData.current.ipAddress
-		};
-		tempWS.send(JSON.stringify(data));
 		tempWS.onmessage = (e) => {
 			e.data = JSON.parse(e.data);
 			console.log(e.data);
-			var lastActiveDate = new Date(e.data.last_active);
-			lastActiveDate = lastActiveDate.getDate().toString().padStart(2, '0') + "/" +  (lastActiveDate.getMonth()+1).toString().padStart(2, '0') + "/" + lastActiveDate.getFullYear();
-			var linkedDate = new Date(e.data.linked_date);
-			linkedDate = linkedDate.getDate().toString().padStart(2, '0') + "/" +  (linkedDate.getMonth()+1).toString().padStart(2, '0') + "/" + linkedDate.getFullYear();
-			if(e.data.success !== true) showMessage({ message: "Error when connecting" });
-			else navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: e.data.computer_name, OS: e.data.OS, linkedDate: linkedDate, lastActiveDate: lastActiveDate });
+			if(e.data.type === "server_connect"){
+				const connData = {
+					type: "android_connect_pc",
+					pc_ip: connectData.current.ipAddress
+				};
+				tempWS.send(JSON.stringify(connData));
+			}
+			if(e.data.type === "server_pc_accept"){
+				var lastActiveDate = new Date();
+				lastActiveDate = lastActiveDate.getDate().toString().padStart(2, '0') + "/" +  (lastActiveDate.getMonth()+1).toString().padStart(2, '0') + "/" + lastActiveDate.getFullYear();
+				var linkedDate = new Date();
+				linkedDate = linkedDate.getDate().toString().padStart(2, '0') + "/" +  (linkedDate.getMonth()+1).toString().padStart(2, '0') + "/" + linkedDate.getFullYear();
+				navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: e.data.computer_name, OS: e.data.OS, linkedDate: linkedDate, lastActiveDate: lastActiveDate });
+			}
 		};
 	}
 

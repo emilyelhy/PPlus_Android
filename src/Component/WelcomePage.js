@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
 import {
 	SafeAreaView,
 	Text,
@@ -19,6 +19,7 @@ import Clipboard from '@react-native-community/clipboard';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from '@react-navigation/native';
+import DeviceInfo from 'react-native-device-info';
 
 import { findInfo } from '../connectionHandler';
 import { SettingContext } from '../contextHandler';
@@ -32,11 +33,13 @@ export default function WelcomePage() {
 	};
 
 	const navigation = useNavigation();
-	const { WS } = useContext(SettingContext);
+	const { setWS } = useContext(SettingContext);
 
 	const connectData = useRef({ ipAddress: "", port: 0 });
 	const handleIPAddress = (value) => { connectData.current.ipAddress = value; };
 	const handlePort = (value) => { connectData.current.port = Number(value); };
+	const [DEVICE_NAME, setDeviceName] = useState();
+	const [DEVICE_MAC, setDeviceMac] = useState();
 
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
@@ -47,12 +50,36 @@ export default function WelcomePage() {
 		// 	return;
 		// }
 		// navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
+		
+		// connect to ws
+		setDeviceName(await DeviceInfo.getDevice());
+		setDeviceMac(await DeviceInfo.getMacAddress());
+		var SIGNALING_URL = "ws://" + connectData.current.ipAddress + ":" + connectData.current.port.toString();
+		console.log("[WelcomePage.js] Signaling URL: " + SIGNALING_URL);
+		var tempWS = new WebSocket(SIGNALING_URL);
+		if(DEVICE_NAME != null && DEVICE_MAC != null){
+			setWS(tempWS);
+			tempWS.onopen = () => {
+				const data = {
+					type: "android_connect_server",
+					mac: DEVICE_MAC,
+					name: DEVICE_NAME
+				};
+				tempWS.send(JSON.stringify(data));
+				console.log("[App.js] deviceName: " + DEVICE_NAME);
+				console.log("[App.js] deviceMAC: " + DEVICE_MAC);
+			};
+			tempWS.onmessage = (e) => {
+				console.log(e.data);
+			};
+		}
+		// send connection req
 		const data = {
 			type: "android_connect_pc",
 			pc_ip: connectData.current.ipAddress
-		}
-		WS.send(JSON.stringify(data))
-		WS.onmessage = (e) => {
+		};
+		tempWS.send(JSON.stringify(data));
+		tempWS.onmessage = (e) => {
 			e.data = JSON.parse(e.data);
 			console.log(e.data);
 			var lastActiveDate = new Date(e.data.last_active);

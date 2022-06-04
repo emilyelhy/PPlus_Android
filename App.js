@@ -17,7 +17,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LogBox } from "react-native";
 import FlashMessage from "react-native-flash-message";
-import DeviceInfo from 'react-native-device-info';
+// import DeviceInfo from 'react-native-device-info';
 import {
     RTCPeerConnection,
     RTCIceCandidate,
@@ -80,40 +80,38 @@ const App = () => {
 	// const WS = new WebSocket(SIGNALING_URL);
 	var tempWS;
 	const [WS, setWS] = useState();
-	const [DEVICE_NAME, setDeviceName] = useState();
-	const [DEVICE_MAC, setDeviceMac] = useState();
 	const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(configuration));
 	
-	useEffect(() => {
-		const getDeviceInfo = async () => {
-			setDeviceName(await DeviceInfo.getDevice());
-			setDeviceMac(await DeviceInfo.getMacAddress());
-        }
-		getDeviceInfo();
-		if(DEVICE_NAME != null && DEVICE_MAC != null){
-			tempWS = new WebSocket(SIGNALING_URL);
-			setWS(tempWS);
-			tempWS.onopen = () => {
-				const data = {
-					type: "android_connect_server",
-					mac: DEVICE_MAC,
-					name: DEVICE_NAME
-				};
-				tempWS.send(JSON.stringify(data));
-				console.log("[App.js] deviceName: " + DEVICE_NAME);
-				console.log("[App.js] deviceMAC: " + DEVICE_MAC);
-			};
-			tempWS.onmessage = (e) => {
-				console.log(e.data);
-			};
-		}
-    }, [DEVICE_NAME, DEVICE_MAC]);
+	// useEffect(() => {
+	// 	const getDeviceInfo = async () => {
+	// 		setDeviceName(await DeviceInfo.getDevice());
+	// 		setDeviceMac(await DeviceInfo.getMacAddress());
+    //     }
+	// 	getDeviceInfo();
+	// 	if(DEVICE_NAME != null && DEVICE_MAC != null){
+	// 		tempWS = new WebSocket(SIGNALING_URL);
+	// 		setWS(tempWS);
+	// 		tempWS.onopen = () => {
+	// 			const data = {
+	// 				type: "android_connect_server",
+	// 				mac: DEVICE_MAC,
+	// 				name: DEVICE_NAME
+	// 			};
+	// 			tempWS.send(JSON.stringify(data));
+	// 			console.log("[App.js] deviceName: " + DEVICE_NAME);
+	// 			console.log("[App.js] deviceMAC: " + DEVICE_MAC);
+	// 		};
+	// 		tempWS.onmessage = (e) => {
+	// 			console.log(e.data);
+	// 		};
+	// 	}
+    // }, [DEVICE_NAME, DEVICE_MAC]);
 
 	return (
 		<SafeAreaView style={backgroundStyle}>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, DEVICE_NAME, DEVICE_MAC, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection }}>
+			<SettingContext.Provider value={{ resoValue, setResoValue, FPSValue, setFPSValue, zoom, setZoom, cameraPosition, setCameraPosition, sensitivity, setSensitivity, micBuffer, setMicBuffer, noise, setNoise, volume, setVolume, speakerBuffer, setSpeakerBuffer, stereo, setStereo, WS, setWS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, peerConnection, setPeerConnection }}>
 				<NavigationContainer>
 					<Stack.Navigator screenOptions={{ headerShown: false }}>
 						<Stack.Screen name="Connections" component={ConnectionPage} />

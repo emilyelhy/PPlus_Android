@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useRef, useContext, useState } from 'react';
+import React, { useRef, useContext } from 'react';
 import {
 	SafeAreaView,
 	Text,
@@ -21,12 +21,9 @@ import { showMessage } from "react-native-flash-message";
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 
-import { findInfo } from '../connectionHandler';
 import { SettingContext } from '../contextHandler';
 
 export default function WelcomePage() {
-	const isDarkMode = useColorScheme() === 'dark';
-
 	const backgroundStyle = {
 		flex: 1,
 		backgroundColor: "#DAE2E1",
@@ -43,12 +40,6 @@ export default function WelcomePage() {
 	const submitConnection = async () => {
 		if (!connectData.current.ipAddress) showMessage({ message: "Please enter IP Address first" });
 		if (connectData.current.port === 0) showMessage({ message: "Please enter port first" });
-		// const computer = findInfo(connectData.current);
-		// if (!computer) {
-		// 	showMessage({ message: "Error when connecting" });
-		// 	return;
-		// }
-		// navigation.navigate('Confirmation', { ipAddress: connectData.current.ipAddress, port: connectData.current.port, computerName: computer.computerName, OS: computer.OS, linkedDate: computer.linkedDate, lastActiveDate: computer.lastActiveDate });
 		
 		// connect to ws
 		DEVICE_NAME = await DeviceInfo.getDevice();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -9,16 +9,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { showMessage } from "react-native-flash-message";
 import { Camera } from 'react-native-vision-camera';
-import {
-    RTCPeerConnection,
-    RTCIceCandidate,
-    RTCSessionDescription,
-    RTCView,
-    MediaStream,
-    MediaStreamTrack,
-    mediaDevices,
-    registerGlobals
-} from 'react-native-webrtc';
 
 import { SettingContext } from '../contextHandler';
 
@@ -34,11 +24,9 @@ export default function TogglePage({ route }) {
 
     const handleEnableSpeaker = () => setEnableSpeaker(!enableSpeaker);
 
-    const disconnect = () => {
-        // stop streaming with computer (skip for now)
-
-        // navigate to connections page
+    const buttonSubmit = () => {
         if(ready){
+            // disable all stuff n navigate to connections page if currently connect
             const data = {
                 type: "android_disconnect_pc",
                 pc_ip: ipAddress
@@ -52,6 +40,7 @@ export default function TogglePage({ route }) {
             setEnableSpeaker(false);
             navigation.navigate("Connections");
         } else{
+            // send connection req if currently disconnect
             sendPCConnReq();
         }
     }
@@ -145,7 +134,7 @@ export default function TogglePage({ route }) {
                 </TouchableOpacity>
             </View>
             <TouchableOpacity
-                onPress={disconnect}
+                onPress={buttonSubmit}
                 style={{ backgroundColor: "#DAE2E1", justifyContent: "center", width: "50%", borderRadius: 5, alignSelf: "center", borderWidth: 1, borderColor: "#989DA5" }}
             >
                 <Text style={{ color: "#7B8D93", alignSelf: "center", fontSize: 18, marginVertical: '6%' }}>{ready? "DISCONNECT" : "CONNECT"}</Text>

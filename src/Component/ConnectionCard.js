@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {useContext} from 'react';
+import React from 'react';
 import {
     SafeAreaView,
     Text,

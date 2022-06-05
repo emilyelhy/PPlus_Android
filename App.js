@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'react-native-gesture-handler';
 import {
 	SafeAreaView,
@@ -36,7 +36,7 @@ import TogglePage from './src/Component/TogglePage';
 import CameraSettingPage from './src/Component/CameraSettingPage';
 import MicrophoneSettingPage from './src/Component/MicrophoneSettingPage';
 import SpeakerSettingPage from './src/Component/SpeakerSettingPage';
-import CommunicationTest from './src/Component/CommunicationTest';
+
 import { SettingContext } from './src/contextHandler';
 
 const SIGNALING_URL = "ws://192.168.0.106:8886";
@@ -83,31 +83,6 @@ const App = () => {
 	const [WS, setWS] = useState();
 	const configuration = { "iceServers": [{ "url": "stun:stun.l.google.com:19302" }] };
     const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(configuration));
-	
-	// useEffect(() => {
-	// 	const getDeviceInfo = async () => {
-	// 		setDeviceName(await DeviceInfo.getDevice());
-	// 		setDeviceMac(await DeviceInfo.getMacAddress());
-    //     }
-	// 	getDeviceInfo();
-	// 	if(DEVICE_NAME != null && DEVICE_MAC != null){
-	// 		tempWS = new WebSocket(SIGNALING_URL);
-	// 		setWS(tempWS);
-	// 		tempWS.onopen = () => {
-	// 			const data = {
-	// 				type: "android_connect_server",
-	// 				mac: DEVICE_MAC,
-	// 				name: DEVICE_NAME
-	// 			};
-	// 			tempWS.send(JSON.stringify(data));
-	// 			console.log("[App.js] deviceName: " + DEVICE_NAME);
-	// 			console.log("[App.js] deviceMAC: " + DEVICE_MAC);
-	// 		};
-	// 		tempWS.onmessage = (e) => {
-	// 			console.log(e.data);
-	// 		};
-	// 	}
-    // }, [DEVICE_NAME, DEVICE_MAC]);
 
 	return (
 		<SafeAreaView style={backgroundStyle}>
@@ -125,8 +100,6 @@ const App = () => {
 					</Stack.Navigator>
 				</NavigationContainer>
 			</SettingContext.Provider>
-			{/* <MicrophoneSettingPage></MicrophoneSettingPage> */}
-			{/* <CommunicationTest></CommunicationTest> */}
 			<FlashMessage position="bottom" />
 		</SafeAreaView>
 	);

@@ -8,7 +8,6 @@ import {
     Text,
 } from 'react-native';
 
-// import { connections } from '../Connection.json';
 import ConnectionCard from './ConnectionCard';
 import { getConnected } from '../connectionHandler';
 
@@ -23,7 +22,6 @@ export default function ConnectionPage() {
                 result = JSON.parse(result);
                 setConnections(result);
             }
-            // console.log(result);
         }
         updateConnections();
     }, [connections]);

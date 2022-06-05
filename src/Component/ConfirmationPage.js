@@ -22,13 +22,7 @@ export default function ConfirmationPage({ route }) {
     };
 
     const connect = async () => {
-        // Actual connection code, maybe call handler again
-        // skip from now
-
-        // check hv ng hv file
-        // if no file -> write file
-        // if hv file -> get content -> write new file
-
+        // get connected from json file through connectionHandler
         var result = await getConnected();
         if (result.length > 0){
             result = JSON.parse(result);

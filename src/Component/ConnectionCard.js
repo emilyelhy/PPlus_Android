@@ -20,13 +20,10 @@ import { useNavigation } from '@react-navigation/native';
 
 // import { connections } from "../Connection.json";
 import { setConnected, getConnected } from "../connectionHandler";
-import { SettingContext } from '../contextHandler';
 
 export default function WelcomePage(props) {
     const navigation = useNavigation();
     const { computerName, OS, linkedDate, lastActiveDate, ipAddress } = props;
-
-    const { WS } = useContext(SettingContext);
 
     const windowWidth = Dimensions.get('window').width;
 
@@ -44,16 +41,6 @@ export default function WelcomePage(props) {
                 break;
             }
         }
-
-        const data = {
-            type: "android_disconnect_pc",
-            pc_ip: ipAddress
-        }
-        WS.send(JSON.stringify(data));
-        WS.onmessage = (e) => {
-            console.log(e.data);
-        };
-
         if (connected.length === 0) navigation.navigate("Welcome");
         await setConnected(connected);
     }

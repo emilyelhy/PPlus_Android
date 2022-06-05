@@ -59,6 +59,7 @@ export default function CameraSettingPage({ route }) {
     }
 
     const [localStream, setLocalStream] = useState({ toURL: () => null });
+    const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
     useEffect(() => {
         let isFront = cameraPosition === "back" ? false : true;
         mediaDevices.enumerateDevices().then(sourceInfos => {
@@ -92,7 +93,19 @@ export default function CameraSettingPage({ route }) {
     const streaming = (stream) => {
         peerConnection.addStream(stream);
         setLocalStream(stream);
-        console.log(stream);
+        console.log("[CameraSettingPage.js] peerConnection:");
+        console.log(peerConnection);
+        // peerConnection.ontrack = event => {
+        //     event.streams[0].getTracks().forEach(track => {
+        //         setRemoteStream(track);
+        //     })
+        // }
+        peerConnection.addEventListener('addstream', (event) => {
+            console.log("Add stream detected");
+            // console.log(event);
+            console.log(event.stream);
+            setRemoteStream(event.stream);
+        })
         // stream.getTracks().forEach((track) => {
         //     console.log(track);
         //     stream = stream.addTrack(track);
@@ -153,6 +166,9 @@ export default function CameraSettingPage({ route }) {
                     <View style={{ backgroundColor: "#E8E8E8", height: "43%", width: "90%", alignSelf: "center" }}>
                         <RTCView streamURL={localStream.toURL()} style={StyleSheet.absoluteFillObject} objectFit={'cover'} />
                     </View>
+                    {/* <View style={{ backgroundColor: "#E8E8E8", height: "43%", width: "90%", alignSelf: "center" }}>
+                        <RTCView streamURL={remoteStream.toURL()} style={StyleSheet.absoluteFillObject} objectFit={'cover'} />
+                    </View> */}
                     <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#E8E8E8", marginHorizontal: '8%', marginTop: '3%', zIndex: 1000 }}>
                         <Text style={{ color: "#7B8D93", fontSize: 18, fontWeight: "500", marginLeft: "3%", alignSelf: "center" }}>Resolution</Text>
                         <DropDownPicker

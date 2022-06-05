@@ -39,6 +39,13 @@ export default function TogglePage({ route }) {
 
         // navigate to connections page
         if(ready){
+            const data = {
+                type: "android_disconnect_pc",
+                pc_ip: ipAddress
+            }
+            WS.send(JSON.stringify(data));
+            console.log("[TogglePage.js] Sent deletion request to server");
+            peerConnection.close();
             setReady(false);
             setEnableCamera(false);
             setEnableMicrophone(false);

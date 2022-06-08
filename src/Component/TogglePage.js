@@ -16,7 +16,7 @@ export default function TogglePage({ route }) {
     const { computerName, ipAddress } = route.params;
 
     const navigation = useNavigation();
-    const { WS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, ready, setReady } = useContext(SettingContext);
+    const { WS, enableCamera, setEnableCamera, enableMicrophone, setEnableMicrophone, enableSpeaker, setEnableSpeaker, ready, setReady, peerConnection } = useContext(SettingContext);
 
     const handleEnableCamera = () => setEnableCamera(!enableCamera);
 
